@@ -1,0 +1,26 @@
+name: Security Scan Pipeline
+
+on: [push]
+
+jobs:
+  security-check:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v3
+
+    - name: Setup Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: 3.9
+
+    - name: Install Security Tools
+      run: |
+        pip install checkov pip-audit
+
+    - name: Run Terraform Scan (Checkov)
+      run: checkov -d terraform/
+
+    - name: Run Dependency Scan (pip-audit)
+      run: pip-audit -r app/requirements.txt
